@@ -32,6 +32,8 @@ def plot_comparison(original_img : np.ndarray, final_img : np.ndarray, bin_size 
     # 3. Plot the superpixel (downsampled) image on the right
     # Note: 'interpolation="nearest"' prevents matplotlib from blurring the blocks
     axes[1].imshow(final_img, cmap='gray')
+    axes[1].set_title(f"Binned Image\n({final_img.shape[1]}x{final_img.shape[0]})")
+
     axes[1].axis('off')
 
     # Display the plot
@@ -47,7 +49,7 @@ def shift_pixels(shift: float, og_img : np.ndarray, bin_size : int = 10):
 
     shifted_rows = np.roll(og_img, real_shift, axis = 1)
 
-    shifted_img = np.roll(shifted_rows, real_shift, axis = 0)
+    shifted_img = np.roll(shifted_rows, -1 *real_shift, axis = 0)
 
     binned_shifted = bin_img(shifted_img, bin_size)
 
@@ -65,7 +67,7 @@ def rigid_body_motion(og_img: np.ndarray, shift: float, save_path: Path, deforme
 
     Image.fromarray(ref_img_array, mode='L').save(save_path/"ref_image.tiff")
 
-    for i in range(1, deformed_images_number + 1):
+    for i in range(0, deformed_images_number):
         deformed, deformed_binned = shift_pixels(shift + (i/ 10), og_img, bin_size)
 
         Image.fromarray(deformed_binned.astype(np.uint8), mode='L').save(save_path/f"deformed_image_{i}.tiff")
